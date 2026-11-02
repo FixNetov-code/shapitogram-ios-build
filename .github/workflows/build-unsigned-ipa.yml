@@ -48,24 +48,10 @@ jobs:
       # украшение: домен переживает смену IP у хостера, а IP выручает, если у
       # пользователя не резолвится DNS. Потерять bootstrap-адрес нельзя — без
       # него клиент не доживёт до help.getConfig, где сервер отдаёт свой список.
-      CUSTOM_HOST: shapitogram.xyz
-      CUSTOM_HOST_ALT: 94.156.170.106
+           CUSTOM_HOST: shapitogram.xyz
+      CUSTOM_HOST_ALT: 201.58.184.118
       CUSTOM_PORT: "2398"
-
-      # Публичный ключ MTProto-сервера. Если задан SERVER_INFO_URL, ключ
-      # скачивается прямо во время сборки из /owpengram/server-info — это
-      # предпочтительный путь: при TELESRV_RSA_IDENTITY_MODE=generated сервер
-      # создаёт ключ сам при первом старте, и заранее его никто не знает.
-      #
-      # Проверено 09.10.2026: эндпоинт отвечает 200, а fingerprint, который
-      # считает scripts/fetch_server_key.py (0x1466b1b3af48f70b), совпадает с
-      # rsa_fingerprint из логов сервера (1470057713681102603) — то есть вшивается
-      # ровно тот ключ, которым сервер отвечает в resPQ.
-      #
-      # Пусто -> берётся файл config/server-rsa-public.pem (его надо положить
-      # руками: ssh root@<ip> 'docker exec <server> cat /var/lib/telesrv/server_rsa.pem'
-      # | openssl rsa -pubout).
-      SERVER_INFO_URL: "https://shapitogram.xyz/owpengram/server-info"
+      SERVER_INFO_URL: ""
 
       # Locales kept in the shipped IPA. Russian is required for the target users.
       IPA_KEEP_LOCALES: Base,en,ru
