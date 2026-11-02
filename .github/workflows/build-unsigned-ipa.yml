@@ -38,19 +38,22 @@ jobs:
       CUSTOM_BUNDLE_ID: com.shapitogram.messenger
       CUSTOM_URL_SCHEME: shapitogram
 
-      # Наш MTProto-сервер: seed-адрес, к которому клиент идёт при первом старте.
-      # Применяется скриптом scripts/apply_server.py поверх патча — правка кода
-      # не нужна.
+      # РќР°С€ MTProto-СЃРµСЂРІРµСЂ: seed-Р°РґСЂРµСЃ, Рє РєРѕС‚РѕСЂРѕРјСѓ РєР»РёРµРЅС‚ РёРґС‘С‚ РїСЂРё РїРµСЂРІРѕРј СЃС‚Р°СЂС‚Рµ.
+      # РџСЂРёРјРµРЅСЏРµС‚СЃСЏ СЃРєСЂРёРїС‚РѕРј scripts/apply_server.py РїРѕРІРµСЂС… РїР°С‚С‡Р° вЂ” РїСЂР°РІРєР° РєРѕРґР°
+      # РЅРµ РЅСѓР¶РЅР°.
       #
-      # Домен стоит первым, голый IP — вторым. В Telegram seedAddressList это
-      # список, и MtProtoKit перебирает его целиком (discoverSchemeWithContext:
-      # строит по пробнику на каждый адрес), так что это настоящий fallback, а не
-      # украшение: домен переживает смену IP у хостера, а IP выручает, если у
-      # пользователя не резолвится DNS. Потерять bootstrap-адрес нельзя — без
-      # него клиент не доживёт до help.getConfig, где сервер отдаёт свой список.
+      # Р”РѕРјРµРЅ СЃС‚РѕРёС‚ РїРµСЂРІС‹Рј, РіРѕР»С‹Р№ IP вЂ” РІС‚РѕСЂС‹Рј. Р’ Telegram seedAddressList СЌС‚Рѕ
+      # СЃРїРёСЃРѕРє, Рё MtProtoKit РїРµСЂРµР±РёСЂР°РµС‚ РµРіРѕ С†РµР»РёРєРѕРј (discoverSchemeWithContext:
+      # СЃС‚СЂРѕРёС‚ РїРѕ РїСЂРѕР±РЅРёРєСѓ РЅР° РєР°Р¶РґС‹Р№ Р°РґСЂРµСЃ), С‚Р°Рє С‡С‚Рѕ СЌС‚Рѕ РЅР°СЃС‚РѕСЏС‰РёР№ fallback, Р° РЅРµ
+      # СѓРєСЂР°С€РµРЅРёРµ: РґРѕРјРµРЅ РїРµСЂРµР¶РёРІР°РµС‚ СЃРјРµРЅСѓ IP Сѓ С…РѕСЃС‚РµСЂР°, Р° IP РІС‹СЂСѓС‡Р°РµС‚, РµСЃР»Рё Сѓ
+      # РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РЅРµ СЂРµР·РѕР»РІРёС‚СЃСЏ DNS. РџРѕС‚РµСЂСЏС‚СЊ bootstrap-Р°РґСЂРµСЃ РЅРµР»СЊР·СЏ вЂ” Р±РµР·
+      # РЅРµРіРѕ РєР»РёРµРЅС‚ РЅРµ РґРѕР¶РёРІС‘С‚ РґРѕ help.getConfig, РіРґРµ СЃРµСЂРІРµСЂ РѕС‚РґР°С‘С‚ СЃРІРѕР№ СЃРїРёСЃРѕРє.
       CUSTOM_HOST: shapitogram.xyz
       CUSTOM_HOST_ALT: 201.58.184.118
       CUSTOM_PORT: "2398"
+
+      # РџСѓР±Р»РёС‡РЅС‹Р№ РєР»СЋС‡ MTProto-СЃРµСЂРІРµСЂР°. РћСЃС‚Р°РІР»СЏРµРј РїСѓСЃС‚С‹Рј, С‡С‚РѕР±С‹ РєР»СЋС‡ Р±СЂР°Р»СЃСЏ
+      # РЅР°РїСЂСЏРјСѓСЋ РёР· config/server-rsa-public.pem (С‚СѓРґР° СѓР¶Рµ РІС€РёС‚ СЂРµР°Р»СЊРЅС‹Р№ РєР»СЋС‡ РёР· APK).
       SERVER_INFO_URL: ""
 
       # Locales kept in the shipped IPA. Russian is required for the target users.
@@ -98,7 +101,7 @@ jobs:
           set -euxo pipefail
           # Seed address is baked into Network.swift by the branding patch, but the
           # host/port differ per deployment. Keep them out of the patch so a new
-          # server needs no code edit — just set CUSTOM_HOST / CUSTOM_HOST_ALT /
+          # server needs no code edit вЂ” just set CUSTOM_HOST / CUSTOM_HOST_ALT /
           # CUSTOM_PORT. The script validates all three, so a typo fails here
           # instead of 60 runner-minutes later inside Bazel.
           CUSTOM_HOST="$CUSTOM_HOST" \
@@ -130,14 +133,14 @@ jobs:
           #
           # If the server RSA identity is ever regenerated (mode "generated", or
           # the key file deleted), refresh config/server-rsa-public.pem and
-          # rebuild — otherwise no client can authenticate any more.
+          # rebuild вЂ” otherwise no client can authenticate any more.
           KEY_FILE="$GITHUB_WORKSPACE/config/server-rsa-public.pem"
           # Fail with one readable line instead of "no base64 payload found":
           # an unsigned build with a placeholder key boots into a black splash
           # screen, which is far harder to diagnose than a red X here.
           if ! grep -q '^-----BEGIN .*PUBLIC KEY-----$' "$KEY_FILE"; then
             echo "config/server-rsa-public.pem is still the placeholder." >&2
-            echo "Set SERVER_INFO_URL to https://<домен>/owpengram/server-info," >&2
+            echo "Set SERVER_INFO_URL to https://<РґРѕРјРµРЅ>/owpengram/server-info," >&2
             echo "or paste the real public key into the file." >&2
             exit 1
           fi
@@ -242,6 +245,44 @@ jobs:
             git -C "$SOURCE_DIR" show "$LATEST_PROFILE_REF:build-system/fake-codesigning/profiles/${profile}.mobileprovision" \
               > "$SOURCE_DIR/build-system/fake-codesigning/profiles/${profile}.mobileprovision"
           done
+
+          # Extend expiration date on fake mobileprovision profiles (upstream expired on 2026-10-30)
+          python3 - <<'PY'
+          import glob, os, pathlib, re, subprocess
+
+          source_dir = pathlib.Path(os.environ["SOURCE_DIR"])
+          p12_path = source_dir / "build-system/fake-codesigning/certs/SelfSigned.p12"
+          profiles_dir = source_dir / "build-system/fake-codesigning/profiles"
+
+          subprocess.run([
+              "openssl", "pkcs12", "-in", str(p12_path),
+              "-nodes", "-passin", "pass:", "-out", "/tmp/fake_signer.pem"
+          ], check=True)
+
+          for prof in profiles_dir.glob("*.mobileprovision"):
+              raw = prof.read_bytes()
+              s = raw.find(b'<?xml')
+              e = raw.find(b'</plist>') + 8
+              if s == -1 or e == -1:
+                  continue
+              plist = raw[s:e].decode('utf-8', errors='ignore')
+              plist = re.sub(
+                  r'(<key>ExpirationDate</key>\s*<date>)[^<]+(</date>)',
+                  r'\g<1>2030-01-01T00:00:00Z\g<2>',
+                  plist
+              )
+              tmp_plist = f"/tmp/{prof.stem}.plist"
+              pathlib.Path(tmp_plist).write_text(plist, encoding='utf-8')
+              subprocess.run([
+                  "openssl", "smime", "-sign",
+                  "-in", tmp_plist,
+                  "-out", str(prof),
+                  "-outform", "DER",
+                  "-signer", "/tmp/fake_signer.pem",
+                  "-nodetach"
+              ], check=True)
+              print(f"Resigned {prof.name} with new ExpirationDate 2030-01-01")
+          PY
 
           # dSYM generation used to be stripped out here to save build time, on
           # the reasoning that an unsigned sideload build has no use for symbol
