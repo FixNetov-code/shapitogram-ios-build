@@ -48,7 +48,7 @@ jobs:
       # украшение: домен переживает смену IP у хостера, а IP выручает, если у
       # пользователя не резолвится DNS. Потерять bootstrap-адрес нельзя — без
       # него клиент не доживёт до help.getConfig, где сервер отдаёт свой список.
-           CUSTOM_HOST: shapitogram.xyz
+      CUSTOM_HOST: shapitogram.xyz
       CUSTOM_HOST_ALT: 201.58.184.118
       CUSTOM_PORT: "2398"
       SERVER_INFO_URL: ""
